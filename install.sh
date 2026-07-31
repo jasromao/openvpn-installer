@@ -38,11 +38,16 @@ cd /root
 
 echo
 echo "[4/6] Descarregar backup..."
-
-curl -L \
--H "Authorization: token ${GITHUB_TOKEN}" \
+curl -fL \
+-H "Authorization: Bearer ${GITHUB_TOKEN}" \
 -o backup-openvpn.tar.gz \
 https://raw.githubusercontent.com/${GITHUB_USER}/openvpn-backup/main/backup-openvpn.tar.gz
+
+if [ ! -f backup-openvpn.tar.gz ]; then
+    echo "Erro ao descarregar o backup."
+    exit 1
+fi
+
 
 echo
 echo "[5/6] Descarregar script de restauro..."
