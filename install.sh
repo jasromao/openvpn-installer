@@ -19,13 +19,13 @@ apt-get update
 echo
 echo "[2/6] Instalar dependências..."
 apt-get install -y \
-openvpn \
-easy-rsa \
-iptables \
-curl \
-wget \
-tar \
-unzip
+    openvpn \
+    easy-rsa \
+    iptables \
+    curl \
+    wget \
+    tar \
+    unzip
 
 echo
 echo "[3/6] Credenciais GitHub"
@@ -38,28 +38,36 @@ cd /root
 
 echo
 echo "[4/6] Descarregar backup..."
+
 curl -fL \
--H "Authorization: Bearer ${GITHUB_TOKEN}" \
--o backup-openvpn.tar.gz \
-https://raw.githubusercontent.com/${GITHUB_USER}/openvpn-backup/main/backup-openvpn.tar.gz
+  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+  -o backup-openvpn.tar.gz \
+  "https://raw.githubusercontent.com/${GITHUB_USER}/openvpn-backup/main/backup-openvpn.tar.gz"
 
 if [ ! -f backup-openvpn.tar.gz ]; then
+    echo
     echo "Erro ao descarregar o backup."
     exit 1
 fi
 
-
 echo
 echo "[5/6] Descarregar script de restauro..."
 
-curl -L \
--H "Authorization: token ${GITHUB_TOKEN}" \
--o restaurar-openvpn.sh \
-https://raw.githubusercontent.com/${GITHUB_USER}/openvpn-backup/main/restaurar-openvpn.sh
+curl -fL \
+  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+  -o restaurar-openvpn.sh \
+  "https://raw.githubusercontent.com/${GITHUB_USER}/openvpn-backup/main/restaurar-openvpn.sh"
 
-unset GITHUB_TOKEN
+if [ ! -f restaurar-openvpn.sh ]; then
+    echo
+    echo "Erro ao descarregar o script de restauro."
+    exit 1
+fi
 
 chmod +x restaurar-openvpn.sh
+
+unset GITHUB_TOKEN
+unset GITHUB_USER
 
 echo
 echo "[6/6] Restaurar servidor..."
