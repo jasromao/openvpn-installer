@@ -1,13 +1,36 @@
 #!/bin/bash
 set -e
-echo "======================================="
-echo "  INSTALADOR OPENVPN AUTOMÁTICO"
-echo "======================================="
+
+echo "========================================="
+echo " INSTALAÇÃO OPENVPN AUTOMÁTICA"
+echo "========================================="
+
+export DEBIAN_FRONTEND=noninteractive
 
 apt update
-apt install -y curl wget unzip
+apt install -y curl wget unzip tar openvpn easy-rsa iptables
+
+cd /root
 
 echo
-echo "Instalação concluída."
+echo "A descarregar o backup..."
+
+wget -O backup-openvpn.tar.gz https://raw.githubusercontent.com/jasromao/openvpn-installer/main/backup-openvpn.tar.gz
+
 echo
-echo "Em seguida será descarregado e restaurado o backup."
+echo "A restaurar o backup..."
+
+tar -xzf backup-openvpn.tar.gz
+
+chmod +x restaurar-openvpn.sh
+
+./restaurar-openvpn.sh
+
+echo
+echo "========================================="
+echo " INSTALAÇÃO CONCLUÍDA"
+echo "========================================="
+echo
+echo "Reinicie o Raspberry:"
+echo
+echo "sudo reboot"
