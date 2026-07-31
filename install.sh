@@ -2,23 +2,22 @@
 set -e
 
 echo "=========================================="
-echo "   OPENVPN INSTALLER"
+echo "        OPENVPN INSTALLER"
 echo "=========================================="
 
 if [ "$EUID" -ne 0 ]; then
-    echo "Execute como root:"
-    echo "sudo bash"
+    echo "Execute com sudo."
     exit 1
 fi
 
 export DEBIAN_FRONTEND=noninteractive
 
 echo
-echo "[1/5] Atualizar o sistema..."
+echo "[1/6] Atualizar o sistema..."
 apt-get update
 
 echo
-echo "[2/5] Instalar dependências..."
+echo "[2/6] Instalar dependências..."
 apt-get install -y \
 openvpn \
 easy-rsa \
@@ -28,22 +27,38 @@ wget \
 tar \
 unzip
 
+echo
+echo "[3/6] Credenciais GitHub"
+
+read -p "Utilizador GitHub: " GITHUB_USER
+read -rsp "GitHub Token: " GITHUB_TOKEN
+echo
+
 cd /root
 
 echo
-echo "[3/5] Descarregar backup..."
-wget -O backup-openvpn.tar.gz \
-https://raw.githubusercontent.com/jasromao/openvpn-installer/main/backup-openvpn.tar.gz
+echo "[4/6] Descarregar backup..."
+
+curl -L \
+-H "Authorization: token ${GITHUB_TOKEN}" \
+-o backup-openvpn.tar.gz \
+https://raw.githubusercontent.com/${GITHUB_USER}/openvpn-backup/main/backup-openvpn.tar.gz
 
 echo
-echo "[4/5] Descarregar script de restauro..."
-wget -O restaurar-openvpn.sh \
-https://raw.githubusercontent.com/jasromao/openvpn-installer/main/restaurar-openvpn.sh
+echo "[5/6] Descarregar script de restauro..."
+
+curl -L \
+-H "Authorization: token ${GITHUB_TOKEN}" \
+-o restaurar-openvpn.sh \
+https://raw.githubusercontent.com/${GITHUB_USER}/openvpn-backup/main/restaurar-openvpn.sh
+
+unset GITHUB_TOKEN
 
 chmod +x restaurar-openvpn.sh
 
 echo
-echo "[5/5] Restaurar servidor..."
+echo "[6/6] Restaurar servidor..."
+
 bash restaurar-openvpn.sh
 
 echo
